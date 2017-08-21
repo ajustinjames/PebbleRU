@@ -1,23 +1,48 @@
 var UI = require('ui');
-var apiRequest = new XMLHttpRequest();
-var ajax = require('ajax');
+var apiRequest = new XMLHttpRequest(); //http request to get buses 
+var ajax = require('ajax'); //ajas to get timings
 
-var menu = new UI.Menu({
-  backgroundColor: "white",
-  textColor: "black",
-  highlightBackgroundColor: "blue",
-  highlightTextColor: "white",
-  sections: 
+//url that gets list of buses, but not timings or stops
+var urlBusList = "http://webservices.nextbus.com/service/publicXMLFeed?a=rutgers&command=routeConfig";
+var busList = []; //array to store list of buses
+var busTags = []; //array to store bus tags
+
+var main = new UI.Card({
+  title: "RUPebble",
+  body: "Press select to get timings"
 }); 
 
-var rutgersBusList = "http://webservices.nextbus.com/service/publicXMLFeed?a=rutgers&command=routeConfig";
-var XML_List = apiRequest.open('GET', rutgersBusList, true);
+main.show();
 
-var arr_busList = [];
-
-for(var i = 0; i < XML_List.length; i++) {
-  arr_busList.push(XML_List.body[i]);
-}
+main.on("click", "select", function(e){
+  console.log("Select clicked");
+  apiRequest.open('GET', urlBusList); // get list of buses
+  apiRequest.send();
+  apiRequest.onLoad = function() {
+    try {
+      var jsonBusList = JSON.parse(this.responseText);
+      console.log("Successfully converted to JSON");
+      for(var i = 0; i < jsonBusList.body.route.length; i++) {
+        busList.push(jsonBusList.body.route[i]."-title");
+        busTags.push(jsonBusList.body.route[i]."-tag");
+      }
+      
+    } catch(err) {
+        console.log("Could not convert to JSON");
+    }
+  
+  };
+  
+  var menu = new UI.Menu({
+    sections: [{
+      title: "Newest posts",
+      items: busList
+    }]
+  });
+  
+  menu.show();
+});
+/*
 
 var printBuses = function() {
   for(var i = 0; i < arr_busList.length; i++) {
@@ -36,6 +61,7 @@ var getBusTimes = function(route) {
   
   ajax({ url: rutgersBusTimes, type: 'json' },
     function(data) {
+      
     }
   );
   
@@ -52,3 +78,4 @@ apiRequest.onLoad = function() {
 for(var i = 0; i < arr_busList.length; i++) {
     console.log(arr_busList[i].title);
 }
+*/

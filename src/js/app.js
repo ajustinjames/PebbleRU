@@ -1,12 +1,20 @@
 var UI = require('ui');
-var apiRequest = new XMLHttpRequest(); //http request to get buses 
-var ajax = require('ajax'); //ajas to get timings
+var apiRequest = new XMLHttpRequest(); //http request to get active buses 
+var ajax = require('ajax'); //ajax to get timings of buses
 
-//url that gets list of buses, but not timings or stops
-var urlBusList = "http://webservices.nextbus.com/service/publicXMLFeed?a=rutgers&command=routeConfig";
-var busList = []; //array to store list of buses
+//url that gets list of active buses, but not timings
+//this one returns an xml file
+//this is just in case the other link ever stops working
+//"http://webservices.nextbus.com/service/publicXMLFeed?a=rutgers&command=routeConfig";
+
+//link to get buses, returns a json file
+var jsonUrl = "http://runextbus.herokuapp.com/config"; 
+
+//
+var busList = []; //array to store list of active buses
 var busTags = []; //array to store bus tags
 
+//initial startup screen
 var main = new UI.Card({
   title: "RUPebble",
   body: "Press select to get timings"
@@ -14,47 +22,64 @@ var main = new UI.Card({
 
 main.show();
 
+//event listener for clicking select button
+//after click, the api request is processed
 main.on("click", "select", function(e){
   console.log("Select clicked");
-  apiRequest.open('GET', urlBusList); // get list of buses
-  apiRequest.send();
-  apiRequest.onLoad = function() {
-    try {
-      var jsonBusList = JSON.parse(this.responseText);
-      console.log("Successfully converted to JSON");
-      for(var i = 0; i < jsonBusList.body.route.length; i++) {
-        busList.push(jsonBusList.body.route[i]."-title");
-        busTags.push(jsonBusList.body.route[i]."-tag");
-      }
-      
-    } catch(err) {
-        console.log("Could not convert to JSON");
-    }
   
-  };
   
-  var menu = new UI.Menu({
-    sections: [{
-      title: "Newest posts",
-      items: busList
-    }]
-  });
+  // get JSON file with bus names using ajax
+  ajax({ url: jsonUrl, type: 'json' },
+       function(data) {
   
-  menu.show();
+         try {
+  
+           for(var i = 0; i < data.sortedRoutes.length; i++) {
+             busList.push(data.sortedRoutes[i].title); //store bus names in array
+             busTags.push(data.sortedRoutes[i].tag); //store bus tag in array, necessary for getting timings
+           }
+  
+           for(var i = 0; i <  busList.length; i++) {
+             console.log(busList[i]);
+           }
+  
+           console.log("Successfully converted to JSON, JSON");
+           
+            
+           //string to store buses in a format that the menu item will process it and show it in the app
+           var menuBus = "{title:" + busList[0] + "}" ;
+           console.log(menuBus);
+           for(var i = 1; i < busList.length; i++){
+             //if (busList[i] != "All Campuses"){
+               menuBus += ",{title:" + busList[i] + "}";
+            // }
+             console.log(menuBus);
+           }
+
+           var menu = new UI.Menu({
+
+             sections: [{
+               title: "Buses",
+               items: [{
+                 title:"a"},{title:"b"},{title:"c"}]
+               }]
+           });
+
+
+           menu.show();
+
+           menu.on("select", function(e){
+             console.log(e);
+           });
+  
+         } catch(err) { 
+            
+           console.log("Could not convert to JSON, JSON"); 
+         }
+       }
+  );
 });
 /*
-
-var printBuses = function() {
-  for(var i = 0; i < arr_busList.length; i++) {
-    console.log(arr_busList[i]);
-  }
-};
-
-var chooseBus = function() {
-  var bus = "";
-  return bus;
-};
-
 var getBusTimes = function(route) {
   var rutgersBusTimes = "http://runextbus.herokuapp.com/route/" + route;
   var arr_busTimes = [];
@@ -71,11 +96,9 @@ var getBusTimes = function(route) {
   }
 };
 
-apiRequest.onLoad = function() {
-  console.log("API Call was successful");
-};
 
-for(var i = 0; i < arr_busList.length; i++) {
-    console.log(arr_busList[i].title);
-}
+var chooseBus = function() {
+  var bus = "";
+  return bus;
+};
 */

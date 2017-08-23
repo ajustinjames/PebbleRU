@@ -4,7 +4,7 @@
         ""
     ],
     "companyName": "mohammednadeem902@gmail.com",
-    "longName": "RUPebble",
+    "longName": "RUBus",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -29,15 +29,15 @@
                 "type": "font"
             },
             {
-                "file": "images/email.png",
+                "file": "images/25iconRUBus.png",
                 "menuIcon": true,
-                "name": "IMAGES_EMAIL_PNG",
+                "name": "IMAGES_25ICONRUBUS_PNG",
                 "type": "png"
             }
         ]
     },
     "sdkVersion": "3",
-    "shortName": "RUPebble",
+    "shortName": "RUBus",
     "targetPlatforms": [
         "aplite",
         "basalt",

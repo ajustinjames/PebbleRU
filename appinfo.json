@@ -3,8 +3,8 @@
     "capabilities": [
         ""
     ],
-    "companyName": "mohammednadeem902@gmail.com",
-    "longName": "RUBus",
+    "companyName": "ajustinjames@gmail.com",
+    "longName": "PebbleRU",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -37,7 +37,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "RUBus",
+    "shortName": "PebbleRU",
     "targetPlatforms": [
         "aplite",
         "basalt",
@@ -45,7 +45,7 @@
     ],
     "uuid": "e40fa9a7-0d94-418e-96de-ef2e1bc4ac4a",
     "versionCode": 1,
-    "versionLabel": "1.0",
+    "versionLabel": "1.1",
     "watchapp": {
         "hiddenApp": false,
         "watchface": false

@@ -1,0 +1,29 @@
+{
+    "author": "ajustinjames@gmail.com",
+    "dependencies": {
+        "pebblejs": "1.0.0"
+    },
+    "keywords": [],
+    "name": "pebbleru",
+    "pebble": {
+        "displayName": "PebbleRU",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+        ],
+        "uuid": "12e6ebbb-315a-4916-a92f-f80a6b8de193",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}

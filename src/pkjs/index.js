@@ -1,5 +1,6 @@
-var UI = require('ui');
-var ajax = require('ajax'); //ajax to get timings of buses
+require('pebblejs');
+var UI = require('pebblejs/ui');
+var ajax = require('pebblejs/lib/ajax');
 
 //url that gets list of active buses, but not timings
 //this one returns an xml file

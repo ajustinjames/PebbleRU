@@ -19,6 +19,19 @@ var stopTags = []; //array to store stop tags
 
 var selectIndex;
 
+//credit to bbrame on stackoverflow for this time format function
+//returns a string with 12hr time already formatted
+function formatAMPM(date) {
+	var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return strTime;
+}
+
 
 //initial startup screen
 var main = new UI.Menu({
@@ -145,6 +158,46 @@ main.on('select', function(e) {
 																						});
 														}
 														timeMenu.show();
+														timeMenu.on('select', function(e){
+															var stopI = e.itemIndex;
+															//need to show detailed list of bus time predictions
+															
+															//get current time for time calculations
+															var date = new Date();
+															
+															//new card to show details
+															var details = new UI.Card({
+																title: stopsArr[stopI] + " Predictions for " + busList[selectI2],
+																subtitle: "Updated at: " + formatAMPM(date),
+																style: 'small',
+																scrollable: true
+															});
+															
+															//need to get all predictions, then format them to 12hr, then append them to the same string and make it the body of details card
+															
+															var cardBody = "Arriving at: ";
+															var tempArr = new Array(data[stopI].predictions.length);
+														
+															for (var i = 0; i<tempArr.length; i++){
+															tempArr[i] = [];
+															}
+															//record latest minutes predictions
+															for (var i=0; i<data[stopI].predictions.length; i++){
+																tempArr[i].push(data[stopI].predictions[i].minutes);
+															}
+															
+															for (var i=0; i<tempArr.length; i++){
+																var d = date;
+																d.setMinutes(date.getMinutes()+tempArr[i]);
+																cardBody = cardBody + formatAMPM(d);
+																if (i != tempArr.length-1){
+																	cardBody = cardBody + ", ";
+																}
+															}
+															
+															details.body(cardBody);
+															details.show();
+														});
 													}
 												}
 										);

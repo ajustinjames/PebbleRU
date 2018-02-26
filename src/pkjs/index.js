@@ -25,7 +25,7 @@ var main = new UI.Menu({
 	sections: [{
 		title: 'Select a list',
 		items: [
-			{title:'Active Bus List'},
+			{title:'Bus List'},
 			{title:'Active Stop List'}
 		]
 	}]
@@ -151,13 +151,146 @@ main.on('select', function(e) {
 										
 									});
 								} catch (err){
-									
+									//menu to show in case there was an error in the data (i.e. was not retreieved)
+									var errorMenu = new UI.Menu({
+									sections: [{
+										title: "Error",
+										items: [{
+											title: "Could not retrieve data"
+										}]
+									}]
+									});
+
+									errorMenu.show();
+									console.log("Could not convert to JSON, Stop List");
 								}
 					}
 					
 			);
+	} else if (selectIndex == 1){
+		//need to populate list of active bus stops
+				
+		//get JSON file with bus names
+		ajax ({
+			url:jsonURL,
+			type:'json'
+			},
+					function(data) { //performs actions on selection
+				try {
+
+				for (var i = 0; i < data.active.stops.length; i++) {
+					//store bus names in array
+					stopList.push(data.active.stops[i].title);
+
+					//store bus tag in array, necessary for getting timings
+					stopTags.push(data.active.stops[i].tag);
+				}
+
+				console.log("Successfully converted to JSON, Stop List");
+
+				//create menu to display buses
+				var list = new UI.Menu({
+					sections: [{
+						title: "Active Stops",
+						items: []
+					}]
+				});
+
+				//add each bus to the menu item
+				for (var i = 0; i < busList.length; i++) {
+
+					//append the current stop to the items in menu section
+					list.item(0, i, {
+						title: stopList[i]
+					});
+          
+				}
+
+				list.show();
+
+				//check when select is pressed while on menu
+				//then display buses for the specific stop
+				list.on("select", function(e) {
+
+					//url to get predictions, returns a JSON object
+					var urlPredict = "http://runextbus.herokuapp.com/route/" + stopTags[e.itemIndex];
+					ajax({
+							url: urlPredict,
+							type: 'json'
+						},
+						function(data) {
+							if (data[0].predictions == null) {
+								//new ui menu to show predictions
+								var timeMenu = new UI.Menu({
+									sections: [{
+										title: "Buses",
+										items: [{
+											title: "This stop has no predictions currently"
+										}]
+									}]
+								});
+
+								timeMenu.show();
+							} else {
+								//array to store stops
+								var stopsArr = [];
+
+								//array to store predictions
+								var timesArr = new Array(data.length);
+
+								//make timesArr 2d to hold specific amount of predictions depending on stop
+								for (var i = 0; i < timesArr.length; i++) {
+									timesArr[i] = [];
+								}
+
+								//store stops and times in respective arrays.
+								for (var i = 0; i < data.length; i++) {
+
+									stopsArr.push(data[i].title);
+
+									for (var j = 0; j < data[i].predictions.length; j++) {
+										timesArr[i].push(data[i].predictions[j].minutes);
+									}
+
+								}
+
+								//new ui menu to show predictions
+								var timeMenu = new UI.Menu({
+									sections: [{
+										title: "Stops",
+										items: []
+									}]
+								});
+
+								//add each bus to the menu item
+								for (var i = 0; i < stopsArr.length; i++) {
+
+									//append the current bus to the items in menu section
+									timeMenu.item(0, i, {
+										title: stopsArr[i],
+										subtitle: "Arriving in " + timesArr[i] + " min"
+									});
+								}
+
+								timeMenu.show();
+							}
+						});
+				});
+
+			} catch (err) {
+				//menu to show in case there was an error in the data (i.e. was not retreieved)
+				var errorMenu = new UI.Menu({
+					sections: [{
+						title: "Error",
+						items: [{
+							title: "Could not retrieve data"
+						}]
+					}]
+				});
+
+				errorMenu.show();
+				console.log("Could not convert to JSON, Stop List");
+			}
+		});
 	}
-	
-	
-	
 });
